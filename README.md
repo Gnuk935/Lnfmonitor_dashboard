@@ -49,6 +49,22 @@ lnfmonitor
 
 ---
 
+## Configuração
+
+O **frontend** utiliza uma variável de ambiente para definir a URL do servidor de métricas.  
+Caso esteja rodando a aplicação clonada do repositório (e não via `.deb`), crie um arquivo `.env` na raiz do projeto com:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+- `VITE_API_URL` → endereço onde o backend está rodando (padrão: `http://localhost:3000`)  
+- Altere para o IP do seu servidor ou hostname, se quiser acessar remotamente (ex.: `http://192.168.0.20:3000`)  
+
+> Se instalar via `.deb`, essa configuração já vem ajustada para rodar localmente sem necessidade de editar o `.env`.
+
+---
+
 ## Preview
 
 <div align="center">
