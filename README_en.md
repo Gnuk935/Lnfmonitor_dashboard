@@ -55,11 +55,11 @@ The **frontend** uses an environment variable to define the server URL for metri
 If you are running the app cloned from the repository (not via `.deb`), create a `.env` file in the project root with:
 
 ```env
-VITE_API_URL=http://localhost:3000
+VITE_API_URL=http://localhost:8080
 ```
 
-- `VITE_API_URL` → address where the backend is running (default: `http://localhost:3000`)  
-- Change this to your server IP or hostname if you want remote access (e.g., `http://192.168.0.20:3000`)  
+- `VITE_API_URL` → address where the backend is running (default: `http://localhost:8080`)  
+- Change this to your server IP or hostname if you want remote access (e.g., `http://192.168.0.20:8080`)  
 
 > When installed via `.deb`, this is preconfigured to run locally, so editing the `.env` is not necessary.
 
