@@ -1,4 +1,4 @@
-name: LFfMonitor Docker
+name: Node.js CI/CD Pipeline
 
 on:
   push:
@@ -24,34 +24,13 @@ jobs:
         cache: 'npm'
         cache-dependency-path: './frontend/package-lock.json'
     
-    - name: Debug - List files before build
-      run: |
-        echo "=== Files in frontend ==="
-        ls -la ./frontend/ || echo "frontend dir not found"
-        echo "=== package.json location ==="
-        find . -name "package.json" -type f
-    
     - name: Install dependencies
       run: npm ci
       working-directory: ./frontend
     
-    - name: Debug - List files after install
-      run: |
-        echo "=== Files in frontend after npm install ==="
-        ls -la ./frontend/
-        echo "=== Node modules ==="
-        ls -la ./frontend/node_modules/ | head -10
-    
     - name: Build frontend
       run: npm run build
       working-directory: ./frontend
-    
-    - name: Debug - List files after build
-      run: |
-        echo "=== Frontend dist after build ==="
-        ls -la ./frontend/dist/ || echo "dist not created"
-        echo "=== All files in frontend ==="
-        ls -la ./frontend/
     
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -133,14 +112,14 @@ jobs:
           GIT_COMMIT=${{ github.sha }}
           BUILD_DATE=${{ steps.date.outputs.build_date }}
     
-    # - name: Push to Docker Hub
-    #   uses: redhat-actions/push-to-registry@v2
-    #   with:
-    #     image: lnfmonitor-frontend
-    #     tags: |
-    #       latest
-    #       ${{ steps.version.outputs.tag }}
-    #       ${{ github.sha }}
-    #     registry: docker.io
-    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Push to Docker Hub
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: lnfmonitor-frontend
+        tags: |
+          latest
+          ${{ steps.version.outputs.tag }}
+          ${{ github.sha }}
+        registry: docker.io
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
