@@ -1,0 +1,146 @@
+name: LFfMonitor Docker
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.19.2]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: './frontend/package-lock.json'
+    
+    - name: Debug - List files before build
+      run: |
+        echo "=== Files in frontend ==="
+        ls -la ./frontend/ || echo "frontend dir not found"
+        echo "=== package.json location ==="
+        find . -name "package.json" -type f
+    
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./frontend
+    
+    - name: Debug - List files after install
+      run: |
+        echo "=== Files in frontend after npm install ==="
+        ls -la ./frontend/
+        echo "=== Node modules ==="
+        ls -la ./frontend/node_modules/ | head -10
+    
+    - name: Build frontend
+      run: npm run build
+      working-directory: ./frontend
+    
+    - name: Debug - List files after build
+      run: |
+        echo "=== Frontend dist after build ==="
+        ls -la ./frontend/dist/ || echo "dist not created"
+        echo "=== All files in frontend ==="
+        ls -la ./frontend/
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          ./frontend/dist
+          ./frontend/nginx
+          ./backend
+        retention-days: 1
+
+  build-image:
+    name: Build Container Image
+    runs-on: ubuntu-latest
+    needs: build-frontend  # Espera o job anterior terminar
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+        path: .
+    
+    - name: Debug - List downloaded artifacts
+      run: |
+        echo "=== Files after downloading artifacts ==="
+        ls -la
+        echo "=== Frontend dist ==="
+        ls -la ./frontend/dist/ || echo "frontend/dist not found"
+        echo "=== Frontend nginx ==="
+        ls -la ./frontend/nginx/ || echo "frontend/nginx not found"
+        echo "=== Backend ==="
+        ls -la ./backend/ || echo "backend not found"
+    
+    - name: Debug - List files
+      run: |
+        echo "=== Files in root ==="
+        ls -la
+        echo "=== Files in frontend ==="
+        ls -la ./frontend/ || echo "frontend dir not found"
+        echo "=== Files in backend ==="
+        ls -la ./backend/ || echo "backend dir not found"
+    
+    - name: Get maintainer email
+      id: maintainer
+      run: echo "email=${GITHUB_REPOSITORY_OWNER}@gmail.com" >> $GITHUB_OUTPUT
+    
+    - name: Get tag version
+      id: version
+      run: |
+        if [[ $GITHUB_REF_TYPE == "tag" ]]; then
+          echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+        else
+          echo "tag=latest" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Get current date
+      id: date
+      run: echo "build_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
+    
+    - name: Build container image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: lnfmonitor-frontend
+        tags: |
+          latest
+          ${{ steps.version.outputs.tag }}
+          ${{ github.sha }}
+        containerfiles: |
+          ./Containerfile
+        build-args: |
+          maintainerEmail=${{ steps.maintainer.outputs.email }}
+          appVersion=${{ steps.version.outputs.tag }}
+          enviroment=prod
+          appName=Lnfmonitor
+          GIT_COMMIT=${{ github.sha }}
+          BUILD_DATE=${{ steps.date.outputs.build_date }}
+    
+    # - name: Push to Docker Hub
+    #   uses: redhat-actions/push-to-registry@v2
+    #   with:
+    #     image: lnfmonitor-frontend
+    #     tags: |
+    #       latest
+    #       ${{ steps.version.outputs.tag }}
+    #       ${{ github.sha }}
+    #     registry: docker.io
+    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
