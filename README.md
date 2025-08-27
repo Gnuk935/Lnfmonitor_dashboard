@@ -47,6 +47,24 @@ lnfmonitor
 
 > Testado no **Debian 12/13** e **Ubuntu 22.04+** (derivados devem funcionar também).
 
+### Docker
+
+1º Suba o container com:
+```bash
+podman container run -it --rm \
+  --network host \
+  --pid=host \
+  --uts=host \
+  --ipc=host \
+  --volume /:/host-root:rw \
+  --volume /proc:/proc:rw \
+  --volume /sys:/sys:rw \
+  --volume /dev:/dev:rw \
+  lnfmonitor-frontend:latest
+```
+2º Acesse em: http://localhost:3000
+_caso deseje deixar em background use o parametro -d_
+
 ---
 
 ## Configuração
