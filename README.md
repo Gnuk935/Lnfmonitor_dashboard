@@ -51,7 +51,8 @@ lnfmonitor
 
 Você pode executar o **Lnfmonitor Dashboard** facilmente via **Podman** ou **Docker**.
 
-### Usando Podman
+<details>
+<summary>Usando Podman</summary>
 
 1. Inicie o container:
 
@@ -67,16 +68,17 @@ podman run -it --rm \
   --volume /sys:/sys:rw \
   --volume /dev:/dev:rw \
   docker.io/barros935/lnfmonitor:latest
-```
+````
 
 2. Acesse a interface em:
    👉 [http://localhost:3000](http://localhost:3000)
 
 > 💡 Para rodar em **background**, adicione a flag `-d`.
 
----
+</details>
 
-### Usando Docker
+<details>
+<summary>Usando Docker</summary>
 
 #### Modo Standalone
 
@@ -98,8 +100,11 @@ docker run -it --rm \
 
 2. Acesse a interface em:
    👉 [http://localhost:3000](http://localhost:3000)
----
-### Usando Compose
+
+</details>
+
+<details>
+<summary>Usando Compose</summary>
 
 Arquivos prontos de **Compose** estão disponíveis em [`./compose`](./compose).
 
@@ -119,10 +124,13 @@ Suba com:
 podman-compose -f ./compose/podman-compose.yml up -d
 ```
 
+</details>
+
 ---
 
 📌 Após subir o container (via `run` ou `compose`), a interface estará disponível em:
 👉 [http://localhost:3000](http://localhost:3000)
+
 ## Configuração
 
 O **frontend** utiliza uma variável de ambiente para definir a URL do servidor de métricas.  
