@@ -83,19 +83,15 @@ function parseLinuxStorage(output) {
   if (hostRootMounts.length > 0) {
     return hostRootMounts.map(m => {
       let label = m.label;
-
-      if (label === "/host-root") {
-        label = "/";
-      } else {
-        label = label.replace(/^\/host-root/, "");
-        if (label === "") label = "/";
-      }
-
+      if (label === "/host-root") label = "/";
+      else label = label.replace(/^\/host-root/, "") || "/";
       return { ...m, label };
     });
-  } else {
-    return allMounts.filter(m => m.label === "/");
   }
+
+  return allMounts.filter(
+    m => m.label === "/" || m.label.startsWith("/dev/")
+  );
 }
 
 module.exports = router;
