@@ -77,7 +77,7 @@ jobs:
     - name: Build container image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: lnfmonitor
+        image: ${{ secrets.DOCKERHUB_USERNAME }}/lnfmonitor
         tags: |
           latest
           ${{ steps.version.outputs.tag }}
@@ -95,7 +95,7 @@ jobs:
     - name: Push to Docker Hub
       uses: redhat-actions/push-to-registry@v2
       with:
-        image: lnfmonitor
+        image: ${{ secrets.DOCKERHUB_USERNAME }}/lnfmonitor
         tags: |
           latest
           ${{ steps.version.outputs.tag }}
