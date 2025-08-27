@@ -55,8 +55,8 @@ function parseWindowsStorage(output) {
 
 function parseLinuxStorage(output) {
   const lines = output.trim().split("\n").slice(1);
-  const result = [];
-  
+  const allMounts = [];
+
   lines.forEach((line, index) => {
     const parts = line.trim().split(/\s+/);
     if (parts.length >= 6) {
@@ -66,20 +66,36 @@ function parseLinuxStorage(output) {
       const freeBytes = parseInt(parts[3]);
       const mountPoint = parts[5];
       const pct = totalBytes > 0 ? (usedBytes / totalBytes) * 100 : 0;
-      if (filesystem.startsWith("/dev/") || mountPoint === "/") {
-        result.push({
-          id: `disk-${index}`,
-          label: mountPoint,
-          totalBytes: totalBytes,
-          usedBytes: usedBytes,
-          freeBytes: freeBytes,
-          pct: pct,
-        });
-      }
+
+      allMounts.push({
+        id: `disk-${index}`,
+        label: mountPoint,
+        totalBytes,
+        usedBytes,
+        freeBytes,
+        pct,
+      });
     }
   });
-  
-  return result;
+
+  const hostRootMounts = allMounts.filter(m => m.label.startsWith("/host-root"));
+
+  if (hostRootMounts.length > 0) {
+    return hostRootMounts.map(m => {
+      let label = m.label;
+
+      if (label === "/host-root") {
+        label = "/";
+      } else {
+        label = label.replace(/^\/host-root/, "");
+        if (label === "") label = "/";
+      }
+
+      return { ...m, label };
+    });
+  } else {
+    return allMounts.filter(m => m.label === "/");
+  }
 }
 
 module.exports = router;
