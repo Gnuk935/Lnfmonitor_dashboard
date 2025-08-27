@@ -17,6 +17,7 @@ pids/
 **/node_modules/
 **/jspm_packages/
 **/web_modules/
+backend/node_modules
 
 ### Build outputs do projeto
 frontend/dist/
