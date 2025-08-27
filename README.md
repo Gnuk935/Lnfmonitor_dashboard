@@ -47,11 +47,17 @@ lnfmonitor
 
 > Testado no **Debian 12/13** e **Ubuntu 22.04+** (derivados devem funcionar também).
 
-### Docker
+## Container
 
-1º Suba o container com:
+Você pode executar o **Lnfmonitor Dashboard** facilmente via **Podman** ou **Docker**.
+
+### Usando Podman
+
+1. Inicie o container:
+
 ```bash
-podman container run -it --rm \
+podman run -it --rm \
+  --user root \
   --network host \
   --pid=host \
   --uts=host \
@@ -60,13 +66,63 @@ podman container run -it --rm \
   --volume /proc:/proc:rw \
   --volume /sys:/sys:rw \
   --volume /dev:/dev:rw \
-  lnfmonitor-frontend:latest
+  docker.io/barros935/lnfmonitor:latest
 ```
-2º Acesse em: http://localhost:3000
-_caso deseje deixar em background use o parametro -d_
+
+2. Acesse a interface em:
+   👉 [http://localhost:3000](http://localhost:3000)
+
+> 💡 Para rodar em **background**, adicione a flag `-d`.
 
 ---
 
+### Usando Docker
+
+#### Modo Standalone
+
+1. Inicie o container:
+
+```bash
+docker run -it --rm \
+  --user root \
+  --network host \
+  --pid=host \
+  --uts=host \
+  --ipc=host \
+  --volume /:/host-root:rw \
+  --volume /proc:/proc:rw \
+  --volume /sys:/sys:rw \
+  --volume /dev:/dev:rw \
+  barros935/lnfmonitor:latest
+```
+
+2. Acesse a interface em:
+   👉 [http://localhost:3000](http://localhost:3000)
+---
+### Usando Compose
+
+Arquivos prontos de **Compose** estão disponíveis em [`./compose`](./compose).
+
+#### Docker Compose
+
+Suba com:
+
+```bash
+docker compose -f ./compose/docker-compose.yml up -d
+```
+
+#### Podman Compose
+
+Suba com:
+
+```bash
+podman-compose -f ./compose/podman-compose.yml up -d
+```
+
+---
+
+📌 Após subir o container (via `run` ou `compose`), a interface estará disponível em:
+👉 [http://localhost:3000](http://localhost:3000)
 ## Configuração
 
 O **frontend** utiliza uma variável de ambiente para definir a URL do servidor de métricas.  
