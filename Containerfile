@@ -23,7 +23,7 @@ LABEL maintainer=${maintainerEmail} \
       org.opencontainers.image.revision="${GIT_COMMIT}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       k8s.deployment.name="${appName}" \
-      k8s.container.port="8080"
+      k8s.container.port="3000"
 
 USER root
 
@@ -43,7 +43,5 @@ RUN mkdir -p /app/nginx/logs /app/nginx/run /app/nginx/cache && \
     chown -R 1001:0 /usr/share/nginx/html && chmod -R g+rw /usr/share/nginx/html && \
     chown -R 1001:0 /var/log/nginx && chmod -R g+rw /var/log/nginx
 
-USER 1001
-
-EXPOSE 8080
+EXPOSE 3000
 CMD ["bash", "-c", "node /app/server.js & nginx -g 'daemon off;'"]
