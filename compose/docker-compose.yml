@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  lnfmonitor:
+    image: barros935/lnfmonitor:latest
+    container_name: lnfmonitor
+    user: root
+    network_mode: host
+    pid: host
+    ipc: host
+    volumes:
+      - /:/host-root:rw
+      - /proc:/proc:rw
+      - /sys:/sys:rw
+      - /dev:/dev:rw
+    restart: unless-stopped
+
