@@ -57,26 +57,6 @@ jobs:
         name: build-artifacts
         path: .
     
-    - name: Debug - List downloaded artifacts
-      run: |
-        echo "=== Files after downloading artifacts ==="
-        ls -la
-        echo "=== Frontend dist ==="
-        ls -la ./frontend/dist/ || echo "frontend/dist not found"
-        echo "=== Frontend nginx ==="
-        ls -la ./frontend/nginx/ || echo "frontend/nginx not found"
-        echo "=== Backend ==="
-        ls -la ./backend/ || echo "backend not found"
-    
-    - name: Debug - List files
-      run: |
-        echo "=== Files in root ==="
-        ls -la
-        echo "=== Files in frontend ==="
-        ls -la ./frontend/ || echo "frontend dir not found"
-        echo "=== Files in backend ==="
-        ls -la ./backend/ || echo "backend dir not found"
-    
     - name: Get maintainer email
       id: maintainer
       run: echo "email=${GITHUB_REPOSITORY_OWNER}@gmail.com" >> $GITHUB_OUTPUT
@@ -97,7 +77,7 @@ jobs:
     - name: Build container image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: lnfmonitor-frontend
+        image: lnfmonitor
         tags: |
           latest
           ${{ steps.version.outputs.tag }}
@@ -115,7 +95,7 @@ jobs:
     - name: Push to Docker Hub
       uses: redhat-actions/push-to-registry@v2
       with:
-        image: lnfmonitor-frontend
+        image: lnfmonitor
         tags: |
           latest
           ${{ steps.version.outputs.tag }}
