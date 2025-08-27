@@ -44,4 +44,4 @@ RUN mkdir -p /app/nginx/logs /app/nginx/run /app/nginx/cache && \
     chown -R 1001:0 /var/log/nginx && chmod -R g+rw /var/log/nginx
 
 EXPOSE 3000
-CMD ["bash", "-c", "node /app/server.js & nginx -g 'daemon off;'"]
+ENTRYPOINT ["bash", "-c", "node /app/server.js & nginx -g 'daemon off;'"]
